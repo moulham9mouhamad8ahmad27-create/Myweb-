@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصتي التعليمية والبرمجية | Portfolio & Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00f2fe;
+            --primary-purple: #4facfe;
+            --bg-dark: #0b0f19;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(11, 15, 25, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; }
+        .logo-container { display: flex; align-items: center; gap: 12px; }
+        .site-logo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-blue); box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+        .logo-text { font-size: 1.2rem; font-weight: 900; background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-buttons { display: flex; gap: 10px; }
+        .nav-buttons button { background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple)); border: none; color: #000; font-weight: 700; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+        #logoutNavBtn { background: #ef4444 !important; color: #fff !important; display: none; }
+        .hero { text-align: center; padding: 50px 20px 20px; }
+        .hero h1 { font-size: 2.2rem; margin-bottom: 10px; }
+        .hero p { color: var(--text-muted); font-size: 1rem; }
+        .admin-control-bar { display: none; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 15px; background: rgba(79, 172, 254, 0.1); border-top: 1px dashed var(--primary-blue); border-bottom: 1px dashed var(--primary-blue); margin-bottom: 20px; }
+        .admin-control-bar button { background: #10b981; color: #fff; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; flex: 1; width: 100%; }
+        .section-title { font-size: 1.6rem; margin: 30px 0 15px; border-right: 4px solid var(--primary-blue); padding-right: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+        .card-media { width: 100%; height: 160px; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .card-media img, .card-media video { width: 100%; height: 100%; object-fit: cover; }
+        .card-content { padding: 15px; display: flex; flex-direction: column; flex: 1; }
+        .card-content h3 { font-size: 1.1rem; margin-bottom: 8px; }
+        .card-content p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; flex: 1; }
+        .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+        .tag { background: rgba(0, 242, 254, 0.1); color: var(--primary-blue); padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; }
+        .card-actions { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .card-link { color: var(--primary-blue); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+        .delete-btn { background: #ef4444; color: #fff; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+        .empty-box { grid-column: 1 / -1; text-align: center; padding: 30px; color: var(--text-muted); background: var(--bg-card); border-radius: 12px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 9999; padding: 15px; }
+        .modal-content { background: #111827; border: 1px solid var(--border-color); padding: 25px; border-radius: 16px; width: 100%; max-width: 420px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-content h2 { margin-bottom: 15px; font-size: 1.3rem; }
+        .close-modal { position: absolute; top: 15px; left: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; background: #1f2937; border: 1px solid var(--border-color); border-radius: 8px; color: #fff; font-size: 0.95rem; }
+        .form-group textarea { resize: vertical; height: 80px; }
+        .submit-btn { width: 100%; background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple)); color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-top: 8px; }
+        footer { text-align: center; padding: 15px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 30px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img id="headerLogoImg" src="" alt="Logo" class="site-logo" style="display:none;">
+            <div class="logo-text">MOULHAM AHMAD</div>
+        </div>
+        <div class="nav-buttons">
+            <button id="loginNavBtn" onclick="openLoginModal()">دخول 🔒</button>
+            <button id="logoutNavBtn" onclick="logoutAdmin()">خروج</button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1>مرحباً بكم في منصتي البرمجية</h1>
+        <p>مشاريع، دورات، ومحتوى تعليمي احترافي</p>
+    </div>
+
+    <div id="adminControlButtons" class="admin-control-bar">
+        <button onclick="openModal('project')"><i class="fa-solid fa-code"></i> مشروع</button>
+        <button onclick="openModal('media')"><i class="fa-solid fa-photo-film"></i> صورة/فيديو</button>
+        <button onclick="openModal('logo')"><i class="fa-solid fa-image"></i> تغيير الشعار</button>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">المشاريع التقنية</h2>
+        <div id="projects-container" class="grid">
+            <div class="empty-box">جاري تحميل المشاريع...</div>
+        </div>
+
+        <h2 class="section-title">معرض الوسائط والدروس</h2>
+        <div id="videos-container" class="grid">
+            <div class="empty-box">جاري تحميل الوسائط...</div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeLoginModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h2>تسجيل دخول المدير 🔑</h2>
+            <div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••">
+                </div>
+                <button type="button" id="loginSubmitBtn" class="submit-btn" onclick="executeLogin()">دخول لوحة التحكم</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h2 id="modalTitle">إضافة محتوى</h2>
+            <form id="addItemForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="itemType">
+                <div class="form-group" id="titleGroup">
+                    <label>العنوان</label>
+                    <input type="text" id="itemTitle" placeholder="العنوان...">
+                </div>
+                <div class="form-group" id="descGroup">
+                    <label>الوصف</label>
+                    <textarea id="itemDesc" placeholder="الوصف التفصيلي..."></textarea>
+                </div>
+                <div class="form-group" id="tagsGroup">
+                    <label>الوسوم (مفصولة بفاصلة)</label>
+                    <input type="text" id="itemTags" placeholder="HTML, CSS, JS">
+                </div>
+                <div class="form-group" id="projectUrlGroup">
+                    <label>رابط المعاينة</label>
+                    <input type="url" id="itemUrl" placeholder="https://example.com">
+                </div>
+                <div class="form-group" id="fileGroup" style="display:none;">
+                    <label id="fileLabel">اختر الملف</label>
+                    <input type="file" id="itemFile" accept="image/*,video/*">
+                </div>
+                <button type="submit" class="submit-btn" id="saveBtn">حفظ ونشر</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2026 Moulham Ahmad</p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import {
+            getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot,
+            query, orderBy, serverTimestamp, setDoc, getDoc
+        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBESSfIFpyhWj9-Cw6rP8oME-ijJNSQ4Oo",
+            authDomain: "myweb-a7534.firebaseapp.com",
+            projectId: "myweb-a7534",
+            storageBucket: "myweb-a7534.firebasestorage.app",
+            messagingSenderId: "750071935139",
+            appId: "1:750071935139:web:8e0f3d6c1ca1ec54048f16",
+            measurementId: "G-YYRCJTXB0D"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let isAdmin = false;
+
+        window.addEventListener("DOMContentLoaded", () => {
+            loadContent();
+            loadLogo();
+        });
+
+        function updateUIForAdmin(loggedIn) {
+            const loginBtn = document.getElementById("loginNavBtn");
+            const logoutBtn = document.getElementById("logoutNavBtn");
+            const controlBar = document.getElementById("adminControlButtons");
+
+            if (loginBtn) loginBtn.style.display = loggedIn ? "none" : "block";
+            if (logoutBtn) logoutBtn.style.display = loggedIn ? "block" : "none";
+            if (controlBar) controlBar.style.display = loggedIn ? "flex" : "none";
+        }
+
+        window.openLoginModal = function() {
+            document.getElementById("loginModal").style.display = "flex";
+        };
+
+        window.closeLoginModal = function() {
+            document.getElementById("loginModal").style.display = "none";
+        };
+
+        window.executeLogin = function() {
+            const email = document.getElementById("loginEmail").value.trim();
+            const pass = document.getElementById("loginPassword").value;
+
+            const targetEmail = "moulham9mouhamad8ahmad27@gmail.com";
+            const targetPass = "M123@$&!?1zx";
+
+            if (email === targetEmail && pass === targetPass) {
+                isAdmin = true;
+                updateUIForAdmin(true);
+                closeLoginModal();
+                document.getElementById("loginPassword").value = "";
+                loadContent();
+                alert("تم تسجيل الدخول بنجاح!");
+            } else {
+                alert("البريد الإلكتروني أو كلمة المرور غير صحيحة!");
+            }
+        };
+
+        window.logoutAdmin = function() {
+            isAdmin = false;
+            updateUIForAdmin(false);
+            window.location.reload();
+        };
+
+        window.openModal = function(type) {
+            document.getElementById("itemType").value = type;
+            document.getElementById("adminModal").style.display = "flex";
+
+            const titleGroup = document.getElementById("titleGroup");
+            const descGroup = document.getElementById("descGroup");
+            const tagsGroup = document.getElementById("tagsGroup");
+            const projectUrlGroup = document.getElementById("projectUrlGroup");
+            const fileGroup = document.getElementById("fileGroup");
+            const itemFile = document.getElementById("itemFile");
+
+            if (type === "project") {
+                document.getElementById("modalTitle").innerText = "إضافة مشروع جديد";
+                titleGroup.style.display = "block";
+                descGroup.style.display = "block";
+                tagsGroup.style.display = "block";
+                projectUrlGroup.style.display = "block";
+                fileGroup.style.display = "none";
+                itemFile.required = false;
+            } else if (type === "media") {
+                document.getElementById("modalTitle").innerText = "رفع صورة أو فيديو";
+                titleGroup.style.display = "block";
+                descGroup.style.display = "block";
+                tagsGroup.style.display = "none";
+                projectUrlGroup.style.display = "none";
+                fileGroup.style.display = "block";
+                document.getElementById("fileLabel").innerText = "اختر صورة أو فيديو";
+                itemFile.required = true;
+            } else if (type === "logo") {
+                document.getElementById("modalTitle").innerText = "تحديث شعار الموقع";
+                titleGroup.style.display = "none";
+                descGroup.style.display = "none";
+                tagsGroup.style.display = "none";
+                projectUrlGroup.style.display = "none";
+                fileGroup.style.display = "block";
+                document.getElementById("fileLabel").innerText = "اختر صورة الشعار الجديدة";
+                itemFile.required = true;
+            }
+        };
+
+        window.closeModal = function() {
+            document.getElementById("adminModal").style.display = "none";
+            document.getElementById("addItemForm").reset();
+        };
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        window.handleFormSubmit = async function(e) {
+            e.preventDefault();
+
+            if (!isAdmin) {
+                alert("غير مصرح!");
+                return;
+            }
+
+            const type = document.getElementById("itemType").value;
+            const saveBtn = document.getElementById("saveBtn");
+
+            try {
+                saveBtn.innerText = "جاري الحفظ... ⏳";
+                saveBtn.disabled = true;
+
+                if (type === "project") {
+                    await addDoc(collection(db, "projects"), {
+                        title: document.getElementById("itemTitle").value.trim(),
+                        desc: document.getElementById("itemDesc").value.trim(),
+                        url: document.getElementById("itemUrl").value.trim(),
+                        tags: document.getElementById("itemTags").value.trim(),
+                        createdAt: serverTimestamp()
+                    });
+                    closeModal();
+                }
+
+                else if (type === "media") {
+                    const file = document.getElementById("itemFile").files[0];
+
+                    if (!file) {
+                        alert("اختر ملفاً أولاً");
+                        return;
+                    }
+
+                    const base64Data = await readFileAsDataURL(file);
+                    const isVideo = file.type.startsWith("video/");
+
+                    await addDoc(collection(db, "videos"), {
+                        title: document.getElementById("itemTitle").value.trim(),
+                        desc: document.getElementById("itemDesc").value.trim(),
+                        mediaUrl: base64Data,
+                        mediaType: isVideo ? "video" : "image",
+                        createdAt: serverTimestamp()
+                    });
+
+                    closeModal();
+                }
+
+                else if (type === "logo") {
+                    const file = document.getElementById("itemFile").files[0];
+
+                    if (!file) {
+                        alert("اختر صورة للشعار");
+                        return;
+                    }
+
+                    if (!file.type.startsWith("image/")) {
+                        alert("يجب اختيار صورة للشعار.");
+                        return;
+                    }
+
+                    const base64Logo = await readFileAsDataURL(file);
+
+                    await setDoc(
+                        doc(db, "settings", "siteConfig"),
+                        { logoUrl: base64Logo },
+                        { merge: true }
+                    );
+
+                    const logoImg = document.getElementById("headerLogoImg");
+                    logoImg.src = base64Logo;
+                    logoImg.style.display = "block";
+
+                    closeModal();
+                    alert("تم تحديث الشعار بنجاح!");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("خطأ: " + err.message);
+            } finally {
+                saveBtn.innerText = "حفظ ونشر";
+                saveBtn.disabled = false;
+            }
+        };
+
+        async function loadLogo() {
+            try {
+                const docRef = doc(db, "settings", "siteConfig");
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists() && docSnap.data().logoUrl) {
+                    const logoImg = document.getElementById("headerLogoImg");
+                    logoImg.src = docSnap.data().logoUrl;
+                    logoImg.style.display = "block";
+                }
+            } catch (e) {
+                console.error("Logo load error:", e);
+            }
+        }
+
+        function escapeHTML(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function safeUrl(url) {
+            if (!url) return "";
+            try {
+                const parsed = new URL(url);
+                if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+                    return parsed.href;
+                }
+            } catch (_) {}
+            return "";
+        }
+
+        function loadContent() {
+            loadProjects();
+            loadVideos();
+        }
+
+        function loadProjects() {
+            const container = document.getElementById("projects-container");
+            const q = query(
+                collection(db, "projects"),
+                orderBy("createdAt", "desc")
+            );
+
+            onSnapshot(
+                q,
+                snapshot => {
+                    if (snapshot.empty) {
+                        container.innerHTML =
+                            '<div class="empty-box"><p>لا توجد مشاريع مضافة حالياً.</p></div>';
+                        return;
+                    }
+
+                    container.innerHTML = snapshot.docs.map(d => {
+                        const data = d.data();
+                        const previewUrl = safeUrl(data.url);
+
+                        return `
+                            <div class="card-item">
+                                <div class="card-media">
+                                    <i class="fa-solid fa-code"
+                                       style="font-size:2.5rem;color:var(--primary-blue)"></i>
+                                </div>
+                                <div class="card-content">
+                                    <h3>${escapeHTML(data.title)}</h3>
+                                    <p>${escapeHTML(data.desc)}</p>
+
+                                    <div class="tags">
+                                        ${
+                                            data.tags
+                                                ? String(data.tags)
+                                                    .split(",")
+                                                    .map(t => `<span class="tag">${escapeHTML(t.trim())}</span>`)
+                                                    .join("")
+                                                : ""
+                                        }
+                                    </div>
+
+                                    <div class="card-actions">
+                                        ${
+                                            previewUrl
+                                                ? `<a href="${escapeHTML(previewUrl)}"
+                                                     target="_blank"
+                                                     rel="noopener noreferrer"
+                                                     class="card-link">
+                                                     معاينة <i class="fa-solid fa-arrow-left"></i>
+                                                   </a>`
+                                                : "<span></span>"
+                                        }
+
+                                        ${
+                                            isAdmin
+                                                ? `<button class="delete-btn"
+                                                     onclick="deleteItem('projects', '${escapeHTML(d.id)}')">
+                                                     <i class="fa-solid fa-trash"></i>
+                                                   </button>`
+                                                : ""
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join("");
+                },
+                error => {
+                    console.error(error);
+                    container.innerHTML =
+                        '<div class="empty-box"><p>تعذر تحميل المشاريع.</p></div>';
+                }
+            );
+        }
+
+        function loadVideos() {
+            const container = document.getElementById("videos-container");
+            const q = query(
+                collection(db, "videos"),
+                orderBy("createdAt", "desc")
+            );
+
+            onSnapshot(
+                q,
+                snapshot => {
+                    if (snapshot.empty) {
+                        container.innerHTML =
+                            '<div class="empty-box"><p>لا توجد صور أو فيديوهات مضافة حالياً.</p></div>';
+                        return;
+                    }
+
+                    container.innerHTML = snapshot.docs.map(d => {
+                        const data = d.data();
+
+                        const mediaElement =
+                            data.mediaType === "image"
+                                ? `<img src="${escapeHTML(data.mediaUrl)}"
+                                        alt="${escapeHTML(data.title)}"
+                                        loading="lazy">`
+                                : `<video src="${escapeHTML(data.mediaUrl)}"
+                                         controls
+                                         preload="metadata"></video>`;
+
+                        return `
+                            <div class="card-item">
+                                <div class="card-media">
+                                    ${mediaElement}
+                                </div>
+
+                                <div class="card-content">
+                                    <h3>${escapeHTML(data.title)}</h3>
+                                    <p>${escapeHTML(data.desc)}</p>
+
+                                    <div class="card-actions">
+                                        <span style="font-size:0.7rem;color:var(--primary-blue)">
+                                            <i class="fa-solid fa-circle-play"></i>
+                                            ${data.mediaType === "image" ? "صورة" : "فيديو"}
+                                        </span>
+
+                                        ${
+                                            isAdmin
+                                                ? `<button class="delete-btn"
+                                                     onclick="deleteItem('videos', '${escapeHTML(d.id)}')">
+                                                     <i class="fa-solid fa-trash"></i>
+                                                   </button>`
+                                                : ""
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join("");
+                },
+                error => {
+                    console.error(error);
+                    container.innerHTML =
+                        '<div class="empty-box"><p>تعذر تحميل الوسائط.</p></div>';
+                }
+            );
+        }
+
+        window.deleteItem = async function(colName, id) {
+            if (!isAdmin) {
+                alert("غير مصرح!");
+                return;
+            }
+
+            if (!confirm("هل أنت متأكد من الحذف النهائي؟")) return;
+
+            try {
+                await deleteDoc(doc(db, colName, id));
+            } catch (err) {
+                alert("خطأ: " + err.message);
+            }
+        };
+
+        // إغلاق النوافذ عند الضغط خارج محتوى النافذة
+        document.querySelectorAll(".modal").forEach(modal => {
+            modal.addEventListener("click", event => {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
